@@ -107,6 +107,7 @@ class SawyerRigAffordancesV6(SawyerBaseEnv):
         self.random_init_gripper_yaw = kwargs.pop('random_init_gripper_yaw', False)
 
         ## Camera Angle and Objects
+        # MARK colors
         self.configs = kwargs.pop('configs',
                                   {
                                       'camera_angle': {
@@ -1147,6 +1148,10 @@ class SawyerRigAffordancesV6(SawyerBaseEnv):
         for _ in range(3):
             self.step(action)
 
+        # HACK: _large_obj and _small_obj are private, expose them here
+        self.large_obj = int(self._large_obj)
+        self.small_obj = int(self._small_obj)
+
         return self.get_observation()
 
     def format_obs(self, obs):
@@ -1341,6 +1346,8 @@ class SawyerRigAffordancesV6(SawyerBaseEnv):
                 goal_quadrant = goal_slide_quadrants[random.choice(opts)]
         else:
             goal_quadrant = goal_slide_quadrants[task_info['target_quadrant']]
+        # MARK 
+        
         self.obj_slide = self._large_obj
         self.obj_slide_goal = np.array(
             [goal_quadrant[0], goal_quadrant[1], -0.3525]) if goal_quadrant else self.get_object_pos(self._large_obj)
@@ -1414,6 +1421,7 @@ class SawyerRigAffordancesV6(SawyerBaseEnv):
 
             for (goal, can_interact_objs, skill) in possible_goals:
                 if len(can_interact_objs) != 0:
+                    # MARK
                     self.obj_pnp = random.choice(can_interact_objs)
                     self.obj_pnp_goal = goal
                     self.obj_pnp_skill = skill
@@ -1423,6 +1431,7 @@ class SawyerRigAffordancesV6(SawyerBaseEnv):
                 self.obj_pnp_goal = self.on_top_drawer_goal
                 self.obj_pnp_skill = "top"
         else:
+            # MARK 
             target_location_to_goal = {
                 "top": self.on_top_drawer_goal,
                 "in": self.in_drawer_goal,
@@ -1433,6 +1442,7 @@ class SawyerRigAffordancesV6(SawyerBaseEnv):
             self.obj_pnp_skill = task_info['target_location']
 
     def update_drawer_goal(self, task_info=None):
+        # MARK 
         if self.handle_more_open_than_closed():
             td_goal_coeff = td_close_coeff
             self.drawer_skill = 'close'
